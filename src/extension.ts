@@ -6,11 +6,13 @@ import { FoundryLocalClient } from './foundryLocal/client';
 import { ModelManager } from './foundryLocal/modelManager';
 import { registerLanguageModelProvider } from './languageModel/provider';
 import { createWorkspaceEdit, parseProposedEdits } from './editing/editParser';
+import { registerWorkspaceTools } from './tools/workspaceTools';
 
 export function activate(context: vscode.ExtensionContext): void {
   const modelManager = new ModelManager();
   const client = new FoundryLocalClient(modelManager);
   registerLanguageModelProvider(context, client, modelManager);
+  registerWorkspaceTools(context);
   registerChatParticipant(context, client);
   registerInlineCompletionProvider(context, client);
   registerCodeActions(context);

@@ -5,8 +5,10 @@ export function registerInlineCompletionProvider(
   context: vscode.ExtensionContext,
   client: FoundryLocalClient
 ): void {
+  let requestGeneration = 0;
   const provider: vscode.InlineCompletionItemProvider = {
     async provideInlineCompletionItems(document, position, completionContext, token) {
+      const generation = ++requestGeneration;
       const configuration = vscode.workspace.getConfiguration('foundryLocal', document.uri);
       if (!configuration.get<boolean>('inlineCompletions', true) || token.isCancellationRequested) {
         return [];
@@ -17,9 +19,18 @@ export function registerInlineCompletionProvider(
         return [];
       }
 
+      const debounceMs = configuration.get<number>('inlineDebounceMs', 120);
+      if (debounceMs > 0 && await waitForDebounce(debounceMs, token)) {
+        return [];
+      }
+      if (generation !== requestGeneration || token.isCancellationRequested) {
+        return [];
+      }
+
       const startLine = Math.max(0, position.line - 20);
       const endLine = Math.min(document.lineCount, position.line + 5);
-      const nearbyCode = document.getText(new vscode.Range(startLine, 0, endLine, 0));
+      const maxCharacters = configuration.get<number>('maxInlineCompletionCharacters', 12000);
+      const nearbyCode = document.getText(new vscode.Range(startLine, 0, endLine, 0)).slice(-maxCharacters);
       const messages = [
         {
           role: 'system' as const,
@@ -27,7 +38,7 @@ export function registerInlineCompletionProvider(
         },
         {
           role: 'user' as const,
-          content: `Language: ${document.languageId}\nCode:\n${nearbyCode}`
+          content: `Language: ${document.languageId}\nCursor is at the end of the prefix.\nCode:\n${nearbyCode}`
         }
       ];
 
@@ -44,7 +55,7 @@ export function registerInlineCompletionProvider(
         .replace(/```\s*$/i, '')
         .trim();
 
-      if (!cleaned || token.isCancellationRequested || completionContext.triggerKind === vscode.InlineCompletionTriggerKind.Automatic && cleaned.includes('\n\n')) {
+      if (!cleaned || generation !== requestGeneration || token.isCancellationRequested || completionContext.triggerKind === vscode.InlineCompletionTriggerKind.Automatic && cleaned.includes('\n\n')) {
         return [];
       }
 
@@ -55,4 +66,18 @@ export function registerInlineCompletionProvider(
   context.subscriptions.push(
     vscode.languages.registerInlineCompletionItemProvider({ scheme: 'file' }, provider)
   );
+}
+
+async function waitForDebounce(milliseconds: number, token: vscode.CancellationToken): Promise<boolean> {
+  return new Promise(resolve => {
+    const timer = setTimeout(() => {
+      disposable.dispose();
+      resolve(false);
+    }, milliseconds);
+    const disposable = token.onCancellationRequested(() => {
+      clearTimeout(timer);
+      disposable.dispose();
+      resolve(true);
+    });
+  });
 }

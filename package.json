@@ -80,6 +80,48 @@
         ]
       }
     ],
+    "languageModelTools": [
+      {
+        "name": "foundryLocal_readFile",
+        "displayName": "Read workspace file",
+        "modelDescription": "Reads a text file from the current workspace using a workspace-relative path.",
+        "description": "Read a text file from the current workspace.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "path": { "type": "string", "description": "Workspace-relative file path." }
+          },
+          "required": ["path"]
+        }
+      },
+      {
+        "name": "foundryLocal_searchWorkspace",
+        "displayName": "Search workspace",
+        "modelDescription": "Searches text in workspace files and returns matching file paths and lines.",
+        "description": "Search text in files in the current workspace.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": { "type": "string", "description": "Case-insensitive text to search for." },
+            "include": { "type": "string", "description": "Optional glob such as **/*.ts." },
+            "maxResults": { "type": "number", "description": "Maximum matching lines, up to 100." }
+          },
+          "required": ["query"]
+        }
+      },
+      {
+        "name": "foundryLocal_getDiagnostics",
+        "displayName": "Get diagnostics",
+        "modelDescription": "Reads VS Code diagnostics for the active file or a workspace-relative file.",
+        "description": "Read VS Code diagnostics for the active file or a workspace-relative file.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "path": { "type": "string", "description": "Optional workspace-relative file path." }
+          }
+        }
+      }
+    ],
     "configuration": {
       "title": "Foundry Local Copilot",
       "properties": {
@@ -118,6 +160,20 @@
           "minimum": 2000,
           "maximum": 100000,
           "description": "Maximum number of source characters included in a request."
+        },
+        "foundryLocal.inlineDebounceMs": {
+          "type": "number",
+          "default": 120,
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Delay before requesting an inline completion after typing."
+        },
+        "foundryLocal.maxInlineCompletionCharacters": {
+          "type": "number",
+          "default": 12000,
+          "minimum": 1000,
+          "maximum": 50000,
+          "description": "Maximum source characters sent for an inline completion."
         }
       }
     }
