@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import type { FoundryLocalManager } from 'foundry-local-sdk' with { "resolution-mode": "import" };
-import type { IModel } from 'foundry-local-sdk' with { "resolution-mode": "import" };
+import { ModelManager } from './modelManager';
 
 type ChatMessage = {
   role: 'system' | 'user' | 'assistant';
@@ -8,48 +7,20 @@ type ChatMessage = {
 };
 
 export class FoundryLocalClient {
-  private manager?: FoundryLocalManager;
-  private model?: IModel;
-
-  async initialize(modelAlias: string): Promise<string> {
-    const sdk = await import('foundry-local-sdk');
-    this.manager = await sdk.FoundryLocalManager.createAsync({
-      appName: 'foundry-local-copilot',
-      logLevel: 'error'
-    });
-
-    const models = await this.manager.catalog.getModels();
-    const selected = modelAlias ? await this.manager.catalog.getModel(modelAlias) : models[0];
-
-    if (!selected) {
-      throw new Error('No Foundry Local model is available. Install a model and try again.');
-    }
-
-    if (!selected.isCached) {
-      const autoDownload = vscode.workspace
-        .getConfiguration('foundryLocal')
-        .get<boolean>('autoDownload', true);
-      if (!autoDownload) {
-        throw new Error(`Model '${selected.alias}' is not in the SDK cache. Enable foundryLocal.autoDownload or download it first.`);
-      }
-      await selected.download();
-    }
-
-    await selected.load();
-    this.model = selected;
-    return selected.alias || selected.id || modelAlias;
-  }
+  constructor(private readonly modelManager: ModelManager) {}
 
   async *stream(
     messages: ChatMessage[],
     configuration: vscode.WorkspaceConfiguration,
     token: vscode.CancellationToken
   ): AsyncIterable<string> {
-    if (!this.model) {
-      await this.initialize(configuration.get<string>('modelAlias', ''));
+    const modelAlias = configuration.get<string>('modelAlias', '');
+    if (!modelAlias) {
+      throw new Error('Set foundryLocal.modelAlias before sending a request.');
     }
 
-    const chatClient = this.model!.createChatClient();
+    const model = await this.modelManager.ensureLoaded(modelAlias, token);
+    const chatClient = model.createChatClient();
     chatClient.settings.temperature = configuration.get<number>('temperature', 0.2);
     chatClient.settings.maxTokens = configuration.get<number>('maxOutputTokens', 512);
 
@@ -63,5 +34,17 @@ export class FoundryLocalClient {
         yield content;
       }
     }
+  }
+
+  async complete(
+    messages: ChatMessage[],
+    configuration: vscode.WorkspaceConfiguration,
+    token: vscode.CancellationToken
+  ): Promise<string> {
+    let result = '';
+    for await (const chunk of this.stream(messages, configuration, token)) {
+      result += chunk;
+    }
+    return result;
   }
 }

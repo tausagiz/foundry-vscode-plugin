@@ -17,7 +17,17 @@ export function registerCodeActions(context: vscode.ExtensionContext): void {
         arguments: [document.uri, range]
       };
 
-      return [explain];
+      const fix = new vscode.CodeAction(
+        'Fix with Foundry Local',
+        vscode.CodeActionKind.QuickFix
+      );
+      fix.command = {
+        command: 'foundryLocal.fixSelection',
+        title: 'Fix with Foundry Local',
+        arguments: [document.uri, range]
+      };
+
+      return [explain, fix];
     }
   };
 

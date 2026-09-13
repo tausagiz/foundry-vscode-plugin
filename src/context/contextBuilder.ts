@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-export function buildEditorContext(): string {
+export function buildEditorContext(maxCharacters = 24000): string {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return 'No editor is currently active.';
@@ -21,7 +21,7 @@ export function buildEditorContext(): string {
     .map(diagnostic => `${diagnostic.severity}: ${diagnostic.message}`)
     .join('\n');
 
-  return [
+  const context = [
     `File: ${vscode.workspace.asRelativePath(editor.document.uri)}`,
     `Language: ${editor.document.languageId}`,
     'Code:',
@@ -30,4 +30,8 @@ export function buildEditorContext(): string {
     '```',
     diagnostics ? `Diagnostics:\n${diagnostics}` : ''
   ].filter(Boolean).join('\n');
+
+  return context.length <= maxCharacters
+    ? context
+    : `${context.slice(0, Math.max(0, maxCharacters - 80))}\n... [context truncated]`;
 }

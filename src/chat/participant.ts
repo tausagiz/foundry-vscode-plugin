@@ -14,7 +14,10 @@ export function registerChatParticipant(
         .slice(-6)
         .map(item => `User: ${item.prompt}`)
         .join('\n');
-      const editorContext = buildEditorContext();
+      const configuration = vscode.workspace.getConfiguration('foundryLocal');
+      const editorContext = buildEditorContext(
+        configuration.get<number>('maxContextCharacters', 24000)
+      );
       const commandInstruction = request.command
         ? `The requested operation is: ${request.command}.`
         : '';
@@ -22,7 +25,6 @@ export function registerChatParticipant(
       response.progress('Loading the local Foundry model...');
 
       try {
-        const configuration = vscode.workspace.getConfiguration('foundryLocal');
         const messages = [
           {
             role: 'system' as const,

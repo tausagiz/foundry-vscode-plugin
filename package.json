@@ -21,12 +21,24 @@
       {
         "command": "foundryLocal.explainSelection",
         "title": "Foundry Local: Explain Selection"
+      },
+      {
+        "command": "foundryLocal.selectModel",
+        "title": "Foundry Local: Select Model"
+      },
+      {
+        "command": "foundryLocal.fixSelection",
+        "title": "Foundry Local: Fix Selection"
       }
     ],
     "menus": {
       "editor/context": [
         {
           "command": "foundryLocal.explainSelection",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "foundryLocal.fixSelection",
           "when": "editorHasSelection"
         }
       ]
@@ -56,6 +68,14 @@
           {
             "name": "fix",
             "description": "Suggest a fix for the current code or diagnostics"
+          },
+          {
+            "name": "refactor",
+            "description": "Refactor the current selection"
+          },
+          {
+            "name": "tests",
+            "description": "Generate tests for the current code"
           }
         ]
       }
@@ -91,6 +111,13 @@
           "minimum": 0,
           "maximum": 2,
           "description": "Sampling temperature for local model requests."
+        },
+        "foundryLocal.maxContextCharacters": {
+          "type": "number",
+          "default": 24000,
+          "minimum": 2000,
+          "maximum": 100000,
+          "description": "Maximum number of source characters included in a request."
         }
       }
     }
@@ -98,6 +125,7 @@
   "scripts": {
     "compile": "tsc -p ./tsconfig.json",
     "watch": "tsc -p ./tsconfig.json --watch",
+    "pretest": "npm run compile",
     "test": "vscode-test",
     "package": "vsce package"
   },
