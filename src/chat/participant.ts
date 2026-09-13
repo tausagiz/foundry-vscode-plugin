@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as chatUtils from '@vscode/chat-extension-utils';
 import { buildEditorContext } from '../context/contextBuilder';
 import { FoundryLocalClient } from '../foundryLocal/client';
 
@@ -21,6 +22,30 @@ export function registerChatParticipant(
       const commandInstruction = request.command
         ? `The requested operation is: ${request.command}.`
         : '';
+
+      if (request.command === 'agent') {
+        const agentRequest = chatUtils.sendChatParticipantRequest(
+          request,
+          chatContext,
+          {
+            model: request.model,
+            prompt: [
+              'You are a local coding agent. Use workspace tools to inspect files and diagnostics before proposing changes.',
+              'Never make edits without using the confirmation-gated propose edits tool.',
+              `Workspace context:\n${editorContext}`
+            ].join('\n\n'),
+            tools: vscode.lm.tools,
+            responseStreamOptions: {
+              stream: response,
+              references: true,
+              responseText: true
+            },
+            extensionMode: context.extensionMode
+          },
+          token
+        );
+        return await agentRequest.result;
+      }
 
       response.progress('Loading the local Foundry model...');
 

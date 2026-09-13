@@ -13,6 +13,7 @@ VS Code extension for local coding assistance powered by Microsoft Foundry Local
 - read-only agent tools for workspace files, search and diagnostics
 - confirmation-gated multi-file edit proposals
 - confirmation-gated `npm test` and `npm run compile` workspace tasks
+- `/agent` tool-calling workflow through the VS Code chat utility API
 
 ## Requirements
 

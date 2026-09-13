@@ -80,6 +80,10 @@
           {
             "name": "tests",
             "description": "Generate tests for the current code"
+          },
+          {
+            "name": "agent",
+            "description": "Inspect the workspace and complete a coding task with confirmed tools"
           }
         ]
       }
@@ -93,9 +97,14 @@
         "inputSchema": {
           "type": "object",
           "properties": {
-            "path": { "type": "string", "description": "Workspace-relative file path." }
+            "path": {
+              "type": "string",
+              "description": "Workspace-relative file path."
+            }
           },
-          "required": ["path"]
+          "required": [
+            "path"
+          ]
         }
       },
       {
@@ -106,11 +115,22 @@
         "inputSchema": {
           "type": "object",
           "properties": {
-            "query": { "type": "string", "description": "Case-insensitive text to search for." },
-            "include": { "type": "string", "description": "Optional glob such as **/*.ts." },
-            "maxResults": { "type": "number", "description": "Maximum matching lines, up to 100." }
+            "query": {
+              "type": "string",
+              "description": "Case-insensitive text to search for."
+            },
+            "include": {
+              "type": "string",
+              "description": "Optional glob such as **/*.ts."
+            },
+            "maxResults": {
+              "type": "number",
+              "description": "Maximum matching lines, up to 100."
+            }
           },
-          "required": ["query"]
+          "required": [
+            "query"
+          ]
         }
       },
       {
@@ -121,7 +141,10 @@
         "inputSchema": {
           "type": "object",
           "properties": {
-            "path": { "type": "string", "description": "Optional workspace-relative file path." }
+            "path": {
+              "type": "string",
+              "description": "Optional workspace-relative file path."
+            }
           }
         }
       },
@@ -133,22 +156,40 @@
         "inputSchema": {
           "type": "object",
           "properties": {
-            "summary": { "type": "string", "description": "Short summary of the proposed changes." },
+            "summary": {
+              "type": "string",
+              "description": "Short summary of the proposed changes."
+            },
             "edits": {
               "type": "array",
               "items": {
                 "type": "object",
                 "properties": {
-                  "uri": { "type": "string" },
-                  "start": { "type": "object" },
-                  "end": { "type": "object" },
-                  "newText": { "type": "string" }
+                  "uri": {
+                    "type": "string"
+                  },
+                  "start": {
+                    "type": "object"
+                  },
+                  "end": {
+                    "type": "object"
+                  },
+                  "newText": {
+                    "type": "string"
+                  }
                 },
-                "required": ["uri", "start", "end", "newText"]
+                "required": [
+                  "uri",
+                  "start",
+                  "end",
+                  "newText"
+                ]
               }
             }
           },
-          "required": ["edits"]
+          "required": [
+            "edits"
+          ]
         }
       },
       {
@@ -159,7 +200,13 @@
         "inputSchema": {
           "type": "object",
           "properties": {
-            "script": { "type": "string", "enum": ["test", "compile"] }
+            "script": {
+              "type": "string",
+              "enum": [
+                "test",
+                "compile"
+              ]
+            }
           }
         }
       }
@@ -228,6 +275,7 @@
     "package": "vsce package --skip-license"
   },
   "dependencies": {
+    "@vscode/chat-extension-utils": "^0.0.0-alpha.5",
     "foundry-local-sdk": "1.2.4",
     "foundry-local-sdk-winml": "latest"
   },
