@@ -3,7 +3,7 @@
   "displayName": "Foundry Local Copilot",
   "description": "Local coding assistance for VS Code powered by Microsoft Foundry Local.",
   "version": "0.0.5",
-  "private": true,
+  "private": false,
   "publisher": "local-development",
   "license": "MIT",
   "repository": {
@@ -369,7 +369,7 @@
   "dependencies": {
     "@vscode/chat-extension-utils": "^0.0.0-alpha.5",
     "foundry-local-sdk": "1.2.4",
-    "foundry-local-sdk-winml": "latest"
+    "foundry-local-sdk-winml": "1.2.4"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

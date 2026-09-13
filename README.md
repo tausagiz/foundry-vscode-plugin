@@ -27,10 +27,9 @@ On Windows, install the runtimes with:
 
 ```powershell
 winget install --id OpenJS.NodeJS.LTS --exact
-winget install --id Microsoft.Azd --exact
 ```
 
-`azd` is only required by the broader Foundry deployment tooling and is not required for local inference itself. The extension uses the `foundry-local-sdk-winml` package for the Windows native runtime and `foundry-local-sdk` for the typed JavaScript API.
+The extension uses the `foundry-local-sdk-winml` package for the Windows native runtime and `foundry-local-sdk` for the typed JavaScript API. `azd` is not required for this extension.
 
 ## Development
 
@@ -43,7 +42,7 @@ Press `F5` to launch an Extension Development Host. The default model is `qwen2.
 
 ## Use The Extension
 
-For a packaged installation, open `foundry-local-copilot-0.0.1.vsix` in VS Code and choose **Install Extension VSIX**. After restarting VS Code:
+For a packaged installation, run `npm run package`, then open the generated `foundry-local-copilot-<version>.vsix` in VS Code and choose **Install Extension VSIX**. After restarting VS Code:
 
 1. Start Foundry Local.
 2. Click **Foundry Local** in the status bar, or run **Foundry Local: Open Chat** from the Command Palette.
@@ -57,3 +56,12 @@ The status bar shows `Foundry Local · Inline ON/OFF`. Suggestions produced by t
 The extension sends prompts to the local Foundry Local runtime. It does not intentionally send source code to Azure or collect prompt telemetry.
 
 Workspace tools are limited to the open workspace. Reading and searching do not modify files. Edit proposals and validation tasks require explicit confirmation. Arbitrary terminal execution is not enabled yet.
+
+## Publishing checklist
+
+Before publishing the repository or a VSIX:
+
+1. Replace the placeholder `publisher` and `repository.url` values in `package.json` with the real Marketplace publisher and public repository URL.
+2. Run `npm ci`, `npm run compile`, `npm test`, `npm run package`, and `npm audit --omit=dev` on Windows.
+3. Inspect the generated package with `npx vsce ls --tree` and verify that it contains no local settings, secrets, model files, or generated development artifacts.
+4. Test the newly generated versioned VSIX in a clean VS Code profile.
