@@ -31,8 +31,13 @@
         "title": "Foundry Local: Open Chat"
       },
       {
+        "command": "foundryLocal.openMenu",
+        "title": "Foundry Local: Quick Menu"
+      },
+      {
         "command": "foundryLocal.selectModel",
-        "title": "Foundry Local: Select Model"
+        "title": "Foundry Local: Select Model",
+        "icon": "$(chip)"
       },
       {
         "command": "foundryLocal.fixSelection",
@@ -45,6 +50,16 @@
       {
         "command": "foundryLocal.showOutput",
         "title": "Foundry Local: Show Output"
+      },
+      {
+        "command": "foundryLocal.selectMode",
+        "title": "Foundry Local: Select Chat Mode",
+        "icon": "$(list-selection)"
+      },
+      {
+        "command": "foundryLocal.configureParameters",
+        "title": "Foundry Local: Configure Parameters",
+        "icon": "$(settings-gear)"
       }
     ],
     "menus": {
@@ -62,6 +77,35 @@
         {
           "command": "foundryLocal.openChat",
           "when": "true"
+        },
+        {
+          "command": "foundryLocal.selectModel",
+          "when": "true"
+        },
+        {
+          "command": "foundryLocal.selectMode",
+          "when": "true"
+        },
+        {
+          "command": "foundryLocal.configureParameters",
+          "when": "true"
+        }
+      ],
+      "workbench/chat/title": [
+        {
+          "command": "foundryLocal.selectModel",
+          "group": "navigation",
+          "when": "chatParticipant == 'foundry-local-copilot.participant'"
+        },
+        {
+          "command": "foundryLocal.selectMode",
+          "group": "navigation",
+          "when": "chatParticipant == 'foundry-local-copilot.participant'"
+        },
+        {
+          "command": "foundryLocal.configureParameters",
+          "group": "navigation",
+          "when": "chatParticipant == 'foundry-local-copilot.participant'"
         }
       ]
     },
