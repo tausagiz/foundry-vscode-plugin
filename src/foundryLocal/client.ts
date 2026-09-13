@@ -15,11 +15,8 @@ export class FoundryLocalClient {
     token: vscode.CancellationToken
   ): AsyncIterable<string> {
     const modelAlias = configuration.get<string>('modelAlias', '');
-    if (!modelAlias) {
-      throw new Error('Set foundryLocal.modelAlias before sending a request.');
-    }
-
-    const model = await this.modelManager.ensureLoaded(modelAlias, token);
+    const selectedAlias = modelAlias || await this.modelManager.ensureDefaultModel(token);
+    const model = await this.modelManager.ensureLoaded(selectedAlias, token);
     const chatClient = model.createChatClient();
     chatClient.settings.temperature = configuration.get<number>('temperature', 0.2);
     chatClient.settings.maxTokens = configuration.get<number>('maxOutputTokens', 512);

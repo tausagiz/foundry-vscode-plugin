@@ -27,6 +27,10 @@
         "title": "Foundry Local: Explain Selection"
       },
       {
+        "command": "foundryLocal.openChat",
+        "title": "Foundry Local: Open Chat"
+      },
+      {
         "command": "foundryLocal.selectModel",
         "title": "Foundry Local: Select Model"
       },
@@ -44,6 +48,12 @@
         {
           "command": "foundryLocal.fixSelection",
           "when": "editorHasSelection"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "foundryLocal.openChat",
+          "when": "true"
         }
       ]
     },
@@ -279,16 +289,22 @@
           "minimum": 1000,
           "maximum": 50000,
           "description": "Maximum source characters sent for an inline completion."
+        },
+        "foundryLocal.autoSelectModel": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use the first available local chat model when no model alias is configured."
         }
       }
     }
   },
   "scripts": {
     "compile": "tsc -p ./tsconfig.json",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --external:vscode --external:foundry-local-sdk --outfile=dist/extension.js",
     "watch": "tsc -p ./tsconfig.json --watch",
     "pretest": "npm run compile",
     "test": "vscode-test",
-    "package": "vsce package"
+    "package": "npm run bundle && vsce package"
   },
   "dependencies": {
     "@vscode/chat-extension-utils": "^0.0.0-alpha.5",
@@ -301,6 +317,7 @@
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.4.0",
+    "esbuild": "^0.25.0",
     "typescript": "^5.8.0"
   },
   "allowScripts": {

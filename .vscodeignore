@@ -3,6 +3,14 @@
 .vscode-test/
 .vscode-test.mjs
 node_modules/
+!node_modules/
+node_modules/*
+node_modules/@vscode/
+node_modules/@vscode/**
+!node_modules/foundry-local-sdk/
+!node_modules/foundry-local-sdk/**
+!node_modules/adm-zip/
+!node_modules/adm-zip/**
 src/
 test/
 coverage/

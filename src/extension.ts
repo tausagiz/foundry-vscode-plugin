@@ -11,12 +11,36 @@ import { registerWorkspaceTools } from './tools/workspaceTools';
 export function activate(context: vscode.ExtensionContext): void {
   const modelManager = new ModelManager();
   const client = new FoundryLocalClient(modelManager);
+  const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  status.command = 'foundryLocal.openChat';
+  status.text = '$(sparkle) Foundry Local';
+  status.tooltip = 'Open Foundry Local chat';
+  status.show();
+  context.subscriptions.push(status);
   registerLanguageModelProvider(context, client, modelManager);
   registerWorkspaceTools(context);
   registerChatParticipant(context, client);
   registerInlineCompletionProvider(context, client);
   registerCodeActions(context);
   context.subscriptions.push(
+    vscode.commands.registerCommand('foundryLocal.openChat', async () => {
+      try {
+        status.text = '$(sync~spin) Foundry Local';
+        status.tooltip = 'Preparing local model...';
+        const cancellation = new vscode.CancellationTokenSource();
+        const alias = await modelManager.ensureDefaultModel(cancellation.token);
+        cancellation.dispose();
+        await vscode.commands.executeCommand('workbench.action.chat.open', {
+          query: `@foundry-local ${alias ? '' : ' '}`
+        });
+        status.text = '$(sparkle) Foundry Local';
+        status.tooltip = `Local model: ${alias}`;
+      } catch (error) {
+        status.text = '$(error) Foundry Local';
+        status.tooltip = error instanceof Error ? error.message : String(error);
+        await vscode.window.showErrorMessage(status.tooltip);
+      }
+    }),
     vscode.commands.registerCommand('foundryLocal.explainSelection', async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor || editor.selection.isEmpty) {

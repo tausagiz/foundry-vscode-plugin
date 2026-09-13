@@ -65,6 +65,34 @@ export class ModelManager {
     return model;
   }
 
+  async ensureDefaultModel(token: vscode.CancellationToken): Promise<string> {
+    const configured = vscode.workspace
+      .getConfiguration('foundryLocal')
+      .get<string>('modelAlias', '');
+    if (configured) {
+      return configured;
+    }
+    const autoSelect = vscode.workspace
+      .getConfiguration('foundryLocal')
+      .get<boolean>('autoSelectModel', true);
+    if (!autoSelect) {
+      throw new Error('Select a Foundry Local model from the Command Palette.');
+    }
+    const models = await this.listModels();
+    const selected = models.find(model => model.capabilities?.toLowerCase().includes('chat')) ?? models[0];
+    if (!selected) {
+      throw new Error('No local model is available. Install a Foundry Local chat model first.');
+    }
+    await vscode.workspace.getConfiguration('foundryLocal').update(
+      'modelAlias', selected.alias,
+      vscode.ConfigurationTarget.Global
+    );
+    if (token.isCancellationRequested) {
+      throw new vscode.CancellationError();
+    }
+    return selected.alias;
+  }
+
   async dispose(): Promise<void> {
     if (this.currentModel) {
       await this.currentModel.unload();

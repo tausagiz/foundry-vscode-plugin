@@ -41,6 +41,17 @@ npm run compile
 
 Press `F5` to launch an Extension Development Host. The default model is `qwen2.5-coder-0.5b`; change it with `foundryLocal.modelAlias` if needed. When `foundryLocal.autoDownload` is enabled, the SDK downloads a model that is not present in its own cache on first use.
 
+## Use The Extension
+
+For a packaged installation, open `foundry-local-copilot-0.0.1.vsix` in VS Code and choose **Install Extension VSIX**. After restarting VS Code:
+
+1. Start Foundry Local.
+2. Click **Foundry Local** in the status bar, or run **Foundry Local: Open Chat** from the Command Palette.
+3. The first available local chat model is selected automatically unless `foundryLocal.modelAlias` is set.
+4. Use the Chat view for normal questions, or `/agent` when the request needs workspace inspection and confirmed actions.
+
+Select code and use the editor context menu for **Explain Selection** or **Fix Selection**. Fixes always open a diff before they can be applied. Inline suggestions are enabled by default.
+
 The extension sends prompts to the local Foundry Local runtime. It does not intentionally send source code to Azure or collect prompt telemetry.
 
 Workspace tools are limited to the open workspace. Reading and searching do not modify files. Edit proposals and validation tasks require explicit confirmation. Arbitrary terminal execution is not enabled yet.
