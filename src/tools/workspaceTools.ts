@@ -24,6 +24,10 @@ type RunTestsInput = {
   script?: 'test' | 'compile';
 };
 
+type RunCommandInput = {
+  command: 'npm test' | 'npm run compile' | 'git status --short';
+};
+
 export function registerWorkspaceTools(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.lm.registerTool<ReadFileInput>('foundryLocal_readFile', {
@@ -145,6 +149,44 @@ export function registerWorkspaceTools(context: vscode.ExtensionContext): void {
         await vscode.tasks.executeTask(task);
         return new vscode.LanguageModelToolResult([
           vscode.LanguageModelDataPart.json({ started: true, script })
+        ]);
+      }
+    }),
+    vscode.lm.registerTool<RunCommandInput>('foundryLocal_runCommand', {
+      prepareInvocation(options) {
+        return {
+          invocationMessage: `Running ${options.input.command}`,
+          confirmationMessages: {
+            title: 'Run an allowed workspace command?',
+            message: `The command '${options.input.command}' will run in the workspace.`
+          }
+        };
+      },
+      async invoke(options) {
+        const folder = vscode.workspace.workspaceFolders?.[0];
+        if (!folder) {
+          throw new Error('Open a workspace before running a command.');
+        }
+        if (!vscode.workspace.isTrusted) {
+          throw new Error('Trust the workspace before running commands.');
+        }
+        const command = options.input.command;
+        const [executable, ...args] = command === 'git status --short'
+          ? ['git', 'status', '--short']
+          : command === 'npm test'
+            ? ['npm.cmd', 'test']
+            : ['npm.cmd', 'run', 'compile'];
+        const task = new vscode.Task(
+          { type: 'foundryLocalAllowedCommand', command },
+          folder,
+          `Foundry Local: ${command}`,
+          'Foundry Local',
+          new vscode.ShellExecution(executable, args, { cwd: folder.uri.fsPath })
+        );
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        await vscode.tasks.executeTask(task);
+        return new vscode.LanguageModelToolResult([
+          vscode.LanguageModelDataPart.json({ started: true, command })
         ]);
       }
     })

@@ -209,6 +209,22 @@
             }
           }
         }
+      },
+      {
+        "name": "foundryLocal_runCommand",
+        "displayName": "Run allowed workspace command",
+        "modelDescription": "Runs only npm test, npm run compile, or git status --short in the trusted workspace after explicit user confirmation.",
+        "description": "Run one of the fixed, confirmation-gated workspace commands.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": ["npm test", "npm run compile", "git status --short"]
+            }
+          },
+          "required": ["command"]
+        }
       }
     ],
     "configuration": {
@@ -272,7 +288,7 @@
     "watch": "tsc -p ./tsconfig.json --watch",
     "pretest": "npm run compile",
     "test": "vscode-test",
-    "package": "vsce package --skip-license"
+    "package": "vsce package"
   },
   "dependencies": {
     "@vscode/chat-extension-utils": "^0.0.0-alpha.5",

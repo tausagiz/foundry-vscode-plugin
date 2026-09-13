@@ -17,6 +17,7 @@ describe('Foundry Local Copilot extension', () => {
         'foundryLocal_getDiagnostics',
         'foundryLocal_proposeEdits',
         'foundryLocal_readFile',
+        'foundryLocal_runCommand',
         'foundryLocal_runTests',
         'foundryLocal_searchWorkspace'
       ]
