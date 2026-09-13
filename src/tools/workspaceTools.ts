@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { createWorkspaceEdit, ProposedEdit } from '../editing/editParser';
 
 type ReadFileInput = {
   path: string;
@@ -12,6 +13,11 @@ type SearchWorkspaceInput = {
 
 type DiagnosticsInput = {
   path?: string;
+};
+
+type ProposedEditsInput = {
+  edits: ProposedEdit[];
+  summary?: string;
 };
 
 export function registerWorkspaceTools(context: vscode.ExtensionContext): void {
@@ -87,6 +93,24 @@ export function registerWorkspaceTools(context: vscode.ExtensionContext): void {
         }));
         return new vscode.LanguageModelToolResult([
           vscode.LanguageModelDataPart.json({ path: vscode.workspace.asRelativePath(uri), diagnostics })
+        ]);
+      }
+    }),
+    vscode.lm.registerTool<ProposedEditsInput>('foundryLocal_proposeEdits', {
+      prepareInvocation(options) {
+        return {
+          invocationMessage: options.input.summary || 'Preparing workspace edits',
+          confirmationMessages: {
+            title: 'Apply Foundry Local edits?',
+            message: options.input.summary || `The model proposed ${options.input.edits.length} edit(s).`
+          }
+        };
+      },
+      async invoke(options) {
+        const workspaceEdit = createWorkspaceEdit(options.input.edits);
+        const applied = await vscode.workspace.applyEdit(workspaceEdit, { isRefactoring: true });
+        return new vscode.LanguageModelToolResult([
+          vscode.LanguageModelDataPart.json({ applied, editCount: options.input.edits.length })
         ]);
       }
     })

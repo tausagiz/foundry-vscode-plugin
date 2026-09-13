@@ -1,0 +1,12 @@
+.git/
+.github/
+.vscode-test/
+.vscode-test.mjs
+node_modules/
+src/
+test/
+coverage/
+dist/**/*.map
+tsconfig.json
+package-lock.json
+*.vsix

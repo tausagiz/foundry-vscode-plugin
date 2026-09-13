@@ -6,6 +6,10 @@
   "private": true,
   "publisher": "local-development",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://example.invalid/local-development/foundry-local-copilot"
+  },
   "engines": {
     "vscode": "^1.100.0"
   },
@@ -120,6 +124,32 @@
             "path": { "type": "string", "description": "Optional workspace-relative file path." }
           }
         }
+      },
+      {
+        "name": "foundryLocal_proposeEdits",
+        "displayName": "Propose workspace edits",
+        "modelDescription": "Proposes validated multi-file workspace edits. Applying them requires explicit user confirmation.",
+        "description": "Prepare validated workspace edits and apply them after user confirmation.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "summary": { "type": "string", "description": "Short summary of the proposed changes." },
+            "edits": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "uri": { "type": "string" },
+                  "start": { "type": "object" },
+                  "end": { "type": "object" },
+                  "newText": { "type": "string" }
+                },
+                "required": ["uri", "start", "end", "newText"]
+              }
+            }
+          },
+          "required": ["edits"]
+        }
       }
     ],
     "configuration": {
@@ -183,7 +213,7 @@
     "watch": "tsc -p ./tsconfig.json --watch",
     "pretest": "npm run compile",
     "test": "vscode-test",
-    "package": "vsce package"
+    "package": "vsce package --skip-license"
   },
   "dependencies": {
     "foundry-local-sdk": "1.2.4",

@@ -10,6 +10,8 @@ VS Code extension for local coding assistance powered by Microsoft Foundry Local
 - `Explain with Foundry Local` action for a selection
 - editor context with the active file, selection and diagnostics
 - automatic SDK model download when `foundryLocal.autoDownload` is enabled
+- read-only agent tools for workspace files, search and diagnostics
+- confirmation-gated multi-file edit proposals
 
 ## Requirements
 
@@ -37,3 +39,5 @@ npm run compile
 Press `F5` to launch an Extension Development Host. The default model is `qwen2.5-coder-0.5b`; change it with `foundryLocal.modelAlias` if needed. When `foundryLocal.autoDownload` is enabled, the SDK downloads a model that is not present in its own cache on first use.
 
 The extension sends prompts to the local Foundry Local runtime. It does not intentionally send source code to Azure or collect prompt telemetry.
+
+Workspace tools are limited to the open workspace. Reading and searching do not modify files. Edit proposals are validated and require explicit confirmation before they are applied. Terminal execution is not enabled yet.
