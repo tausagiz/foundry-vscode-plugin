@@ -11,21 +11,29 @@ import { registerWorkspaceTools } from './tools/workspaceTools';
 export function activate(context: vscode.ExtensionContext): void {
   const modelManager = new ModelManager();
   const client = new FoundryLocalClient(modelManager);
+  const output = vscode.window.createOutputChannel('Foundry Local');
+  context.subscriptions.push(output);
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   status.command = 'foundryLocal.openChat';
-  status.text = '$(sparkle) Foundry Local';
-  status.tooltip = 'Open Foundry Local chat';
+  const updateInlineStatus = (): void => {
+    const enabled = vscode.workspace.getConfiguration('foundryLocal').get<boolean>('inlineCompletions', true);
+    status.text = `$(sparkle) Foundry Local · Inline ${enabled ? 'ON' : 'OFF'}`;
+    status.tooltip = enabled
+      ? 'Foundry Local is active. Click to open chat.'
+      : 'Foundry Local inline completions are disabled. Click to open chat.';
+  };
+  updateInlineStatus();
   status.show();
   context.subscriptions.push(status);
   registerLanguageModelProvider(context, client, modelManager);
   registerWorkspaceTools(context);
   registerChatParticipant(context, client);
-  registerInlineCompletionProvider(context, client);
+  registerInlineCompletionProvider(context, client, output);
   registerCodeActions(context);
   context.subscriptions.push(
     vscode.commands.registerCommand('foundryLocal.openChat', async () => {
       try {
-        status.text = '$(sync~spin) Foundry Local';
+        status.text = '$(sync~spin) Foundry Local · Loading';
         status.tooltip = 'Preparing local model...';
         const cancellation = new vscode.CancellationTokenSource();
         const alias = await modelManager.ensureDefaultModel(cancellation.token);
@@ -33,13 +41,24 @@ export function activate(context: vscode.ExtensionContext): void {
         await vscode.commands.executeCommand('workbench.action.chat.open', {
           query: `@foundry-local ${alias ? '' : ' '}`
         });
-        status.text = '$(sparkle) Foundry Local';
+        updateInlineStatus();
         status.tooltip = `Local model: ${alias}`;
       } catch (error) {
         status.text = '$(error) Foundry Local';
         status.tooltip = error instanceof Error ? error.message : String(error);
         await vscode.window.showErrorMessage(status.tooltip);
       }
+    }),
+    vscode.commands.registerCommand('foundryLocal.toggleInlineCompletions', async () => {
+      const configuration = vscode.workspace.getConfiguration('foundryLocal');
+      const enabled = configuration.get<boolean>('inlineCompletions', true);
+      await configuration.update('inlineCompletions', !enabled, vscode.ConfigurationTarget.Global);
+      updateInlineStatus();
+      output.appendLine(`[settings] inline completions ${!enabled ? 'enabled' : 'disabled'}`);
+      await vscode.window.showInformationMessage(`Foundry Local inline completions ${!enabled ? 'enabled' : 'disabled'}.`);
+    }),
+    vscode.commands.registerCommand('foundryLocal.showOutput', () => {
+      output.show(true);
     }),
     vscode.commands.registerCommand('foundryLocal.explainSelection', async () => {
       const editor = vscode.window.activeTextEditor;

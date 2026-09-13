@@ -52,6 +52,8 @@ For a packaged installation, open `foundry-local-copilot-0.0.1.vsix` in VS Code 
 
 Select code and use the editor context menu for **Explain Selection** or **Fix Selection**. Fixes always open a diff before they can be applied. Inline suggestions are enabled by default.
 
+The status bar shows `Foundry Local · Inline ON/OFF`. Suggestions produced by this extension are logged in the **Foundry Local** Output channel and include **Show Foundry Local completion source** after acceptance. Use **Foundry Local: Toggle Inline Completions** to compare behavior with other completion providers without changing GitHub Copilot settings.
+
 The extension sends prompts to the local Foundry Local runtime. It does not intentionally send source code to Azure or collect prompt telemetry.
 
 Workspace tools are limited to the open workspace. Reading and searching do not modify files. Edit proposals and validation tasks require explicit confirmation. Arbitrary terminal execution is not enabled yet.

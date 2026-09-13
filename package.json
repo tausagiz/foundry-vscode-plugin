@@ -37,6 +37,14 @@
       {
         "command": "foundryLocal.fixSelection",
         "title": "Foundry Local: Fix Selection"
+      },
+      {
+        "command": "foundryLocal.toggleInlineCompletions",
+        "title": "Foundry Local: Toggle Inline Completions"
+      },
+      {
+        "command": "foundryLocal.showOutput",
+        "title": "Foundry Local: Show Output"
       }
     ],
     "menus": {

@@ -3,7 +3,8 @@ import { FoundryLocalClient } from '../foundryLocal/client';
 
 export function registerInlineCompletionProvider(
   context: vscode.ExtensionContext,
-  client: FoundryLocalClient
+  client: FoundryLocalClient,
+  output: vscode.OutputChannel
 ): void {
   let requestGeneration = 0;
   const provider: vscode.InlineCompletionItemProvider = {
@@ -59,7 +60,14 @@ export function registerInlineCompletionProvider(
         return [];
       }
 
-      return [new vscode.InlineCompletionItem(cleaned, new vscode.Range(position, position))];
+      const item = new vscode.InlineCompletionItem(cleaned, new vscode.Range(position, position));
+      item.command = {
+        command: 'foundryLocal.showOutput',
+        title: 'Show Foundry Local completion source',
+        arguments: [document.uri, position]
+      };
+      output.appendLine(`[inline] Foundry Local suggestion ready for ${document.fileName}`);
+      return [item];
     }
   };
 
