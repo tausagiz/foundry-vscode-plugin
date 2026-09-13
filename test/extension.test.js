@@ -23,4 +23,18 @@ describe('Foundry Local Copilot extension', () => {
       ]
     );
   });
+
+  it('declares all chat slash commands in the extension manifest', async () => {
+    const extension = vscode.extensions.getExtension('local-development.foundry-local-copilot');
+    assert.ok(extension, 'The extension should be available in the Extension Development Host');
+
+    const participant = extension.packageJSON.contributes?.chatParticipants?.find(
+      item => item.id === 'foundry-local-copilot.participant'
+    );
+    assert.ok(participant, 'The Foundry Local chat participant should be declared');
+    assert.deepEqual(
+      participant.commands.map(command => command.name),
+      ['ask', 'plan', 'explain', 'fix', 'refactor', 'tests', 'agent']
+    );
+  });
 });

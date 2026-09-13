@@ -2,7 +2,7 @@
   "name": "foundry-local-copilot",
   "displayName": "Foundry Local Copilot",
   "description": "Local coding assistance for VS Code powered by Microsoft Foundry Local.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "publisher": "local-development",
   "license": "MIT",
