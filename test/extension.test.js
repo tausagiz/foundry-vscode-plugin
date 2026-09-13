@@ -4,7 +4,7 @@ const { describe, it } = require('mocha');
 
 describe('Foundry Local Copilot extension', () => {
   it('is installed and can activate', async () => {
-    const extension = vscode.extensions.getExtension('local-development.foundry-local-copilot');
+    const extension = vscode.extensions.getExtension('tausagiz.foundry-local-copilot');
     assert.ok(extension, 'The extension should be available in the Extension Development Host');
 
     await extension.activate();
@@ -25,7 +25,7 @@ describe('Foundry Local Copilot extension', () => {
   });
 
   it('declares all chat slash commands in the extension manifest', async () => {
-    const extension = vscode.extensions.getExtension('local-development.foundry-local-copilot');
+    const extension = vscode.extensions.getExtension('tausagiz.foundry-local-copilot');
     assert.ok(extension, 'The extension should be available in the Extension Development Host');
 
     const participant = extension.packageJSON.contributes?.chatParticipants?.find(

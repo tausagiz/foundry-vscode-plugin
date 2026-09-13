@@ -42,7 +42,7 @@ Press `F5` to launch an Extension Development Host. The default model is `qwen2.
 
 ## Use The Extension
 
-For a packaged installation, run `npm run package`, then open the generated `foundry-local-copilot-<version>.vsix` in VS Code and choose **Install Extension VSIX**. After restarting VS Code:
+For a packaged installation, download the latest `.vsix` from the repository's [Releases](https://github.com/tausagiz/foundry-vscode-plugin/releases) page, then in VS Code run **Extensions: Install from VSIX...**. For a local build, run `npm run package` and install the generated `foundry-local-copilot-<version>.vsix`. After restarting VS Code:
 
 1. Start Foundry Local.
 2. Click **Foundry Local** in the status bar, or run **Foundry Local: Open Chat** from the Command Palette.
@@ -57,11 +57,12 @@ The extension sends prompts to the local Foundry Local runtime. It does not inte
 
 Workspace tools are limited to the open workspace. Reading and searching do not modify files. Edit proposals and validation tasks require explicit confirmation. Arbitrary terminal execution is not enabled yet.
 
-## Publishing checklist
+## Releases
 
-Before publishing the repository or a VSIX:
+The source code is available at [github.com/tausagiz/foundry-vscode-plugin](https://github.com/tausagiz/foundry-vscode-plugin). To prepare a new VSIX release:
 
-1. Replace the placeholder `publisher` and `repository.url` values in `package.json` with the real Marketplace publisher and public repository URL.
+1. Update the version in `package.json` and keep the root version in `package-lock.json` synchronized.
 2. Run `npm ci`, `npm run compile`, `npm test`, `npm run package`, and `npm audit --omit=dev` on Windows.
 3. Inspect the generated package with `npx vsce ls --tree` and verify that it contains no local settings, secrets, model files, or generated development artifacts.
 4. Test the newly generated versioned VSIX in a clean VS Code profile.
+5. Publish the VSIX and release notes from the repository's [Releases](https://github.com/tausagiz/foundry-vscode-plugin/releases) page.

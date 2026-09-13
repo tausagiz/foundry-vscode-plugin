@@ -6,7 +6,7 @@ Only the latest version on the default branch is currently supported.
 
 ## Reporting a vulnerability
 
-Do not open a public issue for a security vulnerability. Contact the repository maintainers through the private security reporting channel configured for the public repository, or the repository owner directly if that channel is not available.
+Do not open a public issue for a security vulnerability. Use the repository's [private vulnerability reporting page](https://github.com/tausagiz/foundry-vscode-plugin/security/advisories/new). If that page is unavailable, contact the repository owner through GitHub rather than disclosing the issue publicly.
 
 Include the affected version, reproduction steps, impact, and any suggested mitigation. Do not include real credentials, private source code, or personal data in the report.
 

@@ -32,7 +32,7 @@
 - Generated files such as `dist/` and `*.vsix` are ignored and should not be committed unless the task explicitly requires them.
 - Keep runtime dependencies pinned to exact versions. Do not use `latest` in `package.json`.
 - Check the VSIX file list with `npx vsce ls --tree` when changing packaging or `.vscodeignore`.
-- Before Marketplace publication, replace the placeholder `publisher` and `repository.url` in `package.json` with the real publisher identity and public repository URL.
+- The published repository is `https://github.com/tausagiz/foundry-vscode-plugin`; keep `publisher` and `repository.url` in `package.json` aligned with the published extension identity.
 
 ## Security and privacy
 

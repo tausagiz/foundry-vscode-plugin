@@ -27,6 +27,8 @@ The audit currently reports a transitive `adm-zip` advisory from the Foundry Loc
 
 Changes to chat commands, language-model tools, activation, manifest metadata, or confirmation gates require focused tests. Keep generated `dist/` and `.vsix` files out of commits.
 
-## Pull requests
+## Issues and pull requests
 
-Describe the user-visible behavior, tests run, and any known dependency or platform limitations. Keep changes focused and do not commit secrets, model files, local configuration, or workspace-specific paths.
+Before opening an issue, check the existing [issues](https://github.com/tausagiz/foundry-vscode-plugin/issues) and include the extension version, VS Code version, Windows version, reproduction steps, and relevant output. Do not include source code, prompts, model files, or personal data unless they are necessary to reproduce the problem and safe to disclose.
+
+For pull requests, describe the user-visible behavior, tests run, and any known dependency or platform limitations. Keep changes focused and do not commit secrets, model files, local configuration, or workspace-specific paths.

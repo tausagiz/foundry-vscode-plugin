@@ -4,11 +4,11 @@
   "description": "Local coding assistance for VS Code powered by Microsoft Foundry Local.",
   "version": "0.0.5",
   "private": false,
-  "publisher": "local-development",
+  "publisher": "tausagiz",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://example.invalid/local-development/foundry-local-copilot"
+    "url": "https://github.com/tausagiz/foundry-vscode-plugin"
   },
   "engines": {
     "vscode": "^1.100.0"
