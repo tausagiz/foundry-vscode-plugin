@@ -15,12 +15,14 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(output);
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   status.command = 'foundryLocal.openChat';
+  let currentModelAlias: string | undefined;
   const updateInlineStatus = (): void => {
     const enabled = vscode.workspace.getConfiguration('foundryLocal').get<boolean>('inlineCompletions', true);
-    status.text = `$(sparkle) Foundry Local · Inline ${enabled ? 'ON' : 'OFF'}`;
+    const modelSuffix = currentModelAlias ? ` · ${currentModelAlias}` : '';
+    status.text = `$(sparkle) Foundry Local · Inline ${enabled ? 'ON' : 'OFF'}${modelSuffix}`;
     status.tooltip = enabled
-      ? 'Foundry Local is active. Click to open chat.'
-      : 'Foundry Local inline completions are disabled. Click to open chat.';
+      ? `Foundry Local is active${currentModelAlias ? ` (model: ${currentModelAlias})` : ''}. Click to open chat.`
+      : `Foundry Local inline completions are disabled${currentModelAlias ? ` (model: ${currentModelAlias})` : ''}. Click to open chat.`;
   };
   updateInlineStatus();
   status.show();
@@ -30,6 +32,16 @@ export function activate(context: vscode.ExtensionContext): void {
   registerChatParticipant(context, client);
   registerInlineCompletionProvider(context, client, output);
   registerCodeActions(context);
+  void (async () => {
+    try {
+      const cancellation = new vscode.CancellationTokenSource();
+      currentModelAlias = await modelManager.ensureDefaultModel(cancellation.token);
+      cancellation.dispose();
+      updateInlineStatus();
+    } catch {
+      // No model resolved yet; the status bar keeps showing without a model name.
+    }
+  })();
   context.subscriptions.push(
     vscode.commands.registerCommand('foundryLocal.openChat', async () => {
       try {
@@ -38,11 +50,12 @@ export function activate(context: vscode.ExtensionContext): void {
         const cancellation = new vscode.CancellationTokenSource();
         const alias = await modelManager.ensureDefaultModel(cancellation.token);
         cancellation.dispose();
+        currentModelAlias = alias;
         await vscode.commands.executeCommand('workbench.action.chat.open', {
-          query: `@foundry-local ${alias ? '' : ' '}`
+          query: `@foundry-local ${alias ? '' : ' '}`,
+          isPartialQuery: true
         });
         updateInlineStatus();
-        status.tooltip = `Local model: ${alias}`;
       } catch (error) {
         status.text = '$(error) Foundry Local';
         status.tooltip = error instanceof Error ? error.message : String(error);
