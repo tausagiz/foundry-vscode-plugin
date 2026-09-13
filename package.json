@@ -1,0 +1,105 @@
+{
+  "name": "foundry-local-copilot",
+  "displayName": "Foundry Local Copilot",
+  "description": "Local coding assistance for VS Code powered by Microsoft Foundry Local.",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "local-development",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "foundryLocal.explainSelection",
+        "title": "Foundry Local: Explain Selection"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "foundryLocal.explainSelection",
+          "when": "editorHasSelection"
+        }
+      ]
+    },
+    "codeActionsProviders": [
+      {
+        "languages": ["*"],
+        "providedCodeActionKinds": ["quickfix"]
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "foundry-local-copilot.participant",
+        "name": "foundry-local",
+        "fullName": "Foundry Local",
+        "description": "Ask a local model about your code and workspace",
+        "isSticky": true,
+        "commands": [
+          {
+            "name": "explain",
+            "description": "Explain the current code or selection"
+          },
+          {
+            "name": "fix",
+            "description": "Suggest a fix for the current code or diagnostics"
+          }
+        ]
+      }
+    ],
+    "configuration": {
+      "title": "Foundry Local Copilot",
+      "properties": {
+        "foundryLocal.inlineCompletions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable local inline code completions."
+        },
+        "foundryLocal.modelAlias": {
+          "type": "string",
+          "default": "",
+          "description": "Foundry Local model alias. Leave empty to choose the first catalog model."
+        },
+        "foundryLocal.maxOutputTokens": {
+          "type": "number",
+          "default": 512,
+          "minimum": 64,
+          "maximum": 4096,
+          "description": "Maximum number of generated tokens for chat requests."
+        },
+        "foundryLocal.temperature": {
+          "type": "number",
+          "default": 0.2,
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Sampling temperature for local model requests."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./tsconfig.json",
+    "watch": "tsc -p ./tsconfig.json --watch",
+    "test": "vscode-test",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "foundry-local-sdk-winml": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.100.0",
+    "typescript": "^5.8.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/vsce": "^3.4.0"
+  }
+}
