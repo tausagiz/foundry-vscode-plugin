@@ -84,6 +84,14 @@
         "isSticky": true,
         "commands": [
           {
+            "name": "ask",
+            "description": "Answer the question using the current editor context"
+          },
+          {
+            "name": "plan",
+            "description": "Create an implementation plan without changing files"
+          },
+          {
             "name": "explain",
             "description": "Explain the current code or selection"
           },

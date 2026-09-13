@@ -19,9 +19,17 @@ export function registerChatParticipant(
       const editorContext = buildEditorContext(
         configuration.get<number>('maxContextCharacters', 24000)
       );
-      const commandInstruction = request.command
-        ? `The requested operation is: ${request.command}.`
-        : '';
+      const modeInstructions: Record<string, string> = {
+        ask: 'Answer the user directly. Explain the reasoning when it helps, but do not propose file changes unless the user asks for them.',
+        plan: 'Create a clear, actionable implementation plan. Inspect the provided context, identify relevant files and risks, and do not modify files or claim that changes were made.',
+        explain: 'Explain the requested code or selection with concise, concrete detail.',
+        fix: 'Suggest a minimal fix for the requested code or diagnostics. Describe the proposed change, but do not apply edits in this mode.',
+        refactor: 'Describe a focused refactoring for the requested code. Do not apply edits in this mode.',
+        tests: 'Suggest focused tests for the requested code. Include important cases and expected behavior, but do not modify files in this mode.'
+      };
+      const modeInstruction = request.command
+        ? modeInstructions[request.command] ?? `Follow the requested operation: ${request.command}.`
+        : modeInstructions.ask;
 
       if (request.command === 'agent') {
         const agentRequest = chatUtils.sendChatParticipantRequest(
@@ -53,12 +61,15 @@ export function registerChatParticipant(
         const messages = [
           {
             role: 'system' as const,
-            content: 'You are a precise local coding assistant. Prefer concise answers and preserve the user code style.'
+            content: [
+              'You are a precise local coding assistant. Prefer concise answers and preserve the user code style.',
+              `Current mode: ${request.command || 'ask'}.`,
+              modeInstruction
+            ].join('\n')
           },
           {
             role: 'user' as const,
             content: [
-              commandInstruction,
               history ? `Recent conversation:\n${history}` : '',
               `Workspace context:\n${editorContext}`,
               `Request:\n${request.prompt}`

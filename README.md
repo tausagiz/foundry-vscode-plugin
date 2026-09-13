@@ -4,7 +4,7 @@ VS Code extension for local coding assistance powered by Microsoft Foundry Local
 
 ## Current MVP
 
-- `@foundry-local` chat participant with `/explain` and `/fix` commands
+- `@foundry-local` chat participant with `ask`, `plan`, `explain`, `fix`, `refactor`, `tests` and `agent` modes
 - local streaming chat responses
 - inline code completions
 - `Explain with Foundry Local` action for a selection
@@ -48,7 +48,7 @@ For a packaged installation, open `foundry-local-copilot-0.0.1.vsix` in VS Code 
 1. Start Foundry Local.
 2. Click **Foundry Local** in the status bar, or run **Foundry Local: Open Chat** from the Command Palette.
 3. The first available local chat model is selected automatically unless `foundryLocal.modelAlias` is set.
-4. Use the Chat view for normal questions, or `/agent` when the request needs workspace inspection and confirmed actions.
+4. Use `/ask` for normal questions, `/plan` for a read-only implementation plan, or `/agent` when the request needs workspace inspection and confirmed actions. `/explain`, `/fix`, `/refactor` and `/tests` remain available for focused coding requests.
 
 Select code and use the editor context menu for **Explain Selection** or **Fix Selection**. Fixes always open a diff before they can be applied. Inline suggestions are enabled by default.
 
