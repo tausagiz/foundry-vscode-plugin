@@ -13,4 +13,10 @@ describe('structured edit parser', () => {
     const { parseProposedEdits } = require('../dist/editing/editParser');
     assert.throws(() => parseProposedEdits('{"edits":[{"uri":"file:///workspace/a.ts"}]}'));
   });
+
+  it('rejects reversed or negative ranges', () => {
+    const { parseProposedEdits } = require('../dist/editing/editParser');
+    assert.throws(() => parseProposedEdits('{"edits":[{"uri":"file:///workspace/a.ts","start":{"line":2,"character":0},"end":{"line":1,"character":0},"newText":"x"}]}'));
+    assert.throws(() => parseProposedEdits('{"edits":[{"uri":"file:///workspace/a.ts","start":{"line":-1,"character":0},"end":{"line":0,"character":0},"newText":"x"}]}'));
+  });
 });

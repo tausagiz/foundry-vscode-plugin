@@ -5,7 +5,7 @@ import { registerCodeActions } from './editing/codeActions';
 import { FoundryLocalClient } from './foundryLocal/client';
 import { ModelManager } from './foundryLocal/modelManager';
 import { registerLanguageModelProvider } from './languageModel/provider';
-import { createWorkspaceEdit, parseProposedEdits } from './editing/editParser';
+import { applyProposedEditsToText, createWorkspaceEdit, parseProposedEdits } from './editing/editParser';
 import { registerWorkspaceTools } from './tools/workspaceTools';
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -50,10 +50,24 @@ export function activate(context: vscode.ExtensionContext): void {
       ];
 
       try {
-        const result = await client.complete(messages, configuration, new vscode.CancellationTokenSource().token);
-        const workspaceEdit = createWorkspaceEdit(parseProposedEdits(result));
+        const cancellation = new vscode.CancellationTokenSource();
+        const result = await client.complete(messages, configuration, cancellation.token);
+        cancellation.dispose();
+        const proposedEdits = parseProposedEdits(result);
+        const workspaceEdit = createWorkspaceEdit(proposedEdits);
+        const proposedText = applyProposedEditsToText(document, proposedEdits);
+        const previewDocument = await vscode.workspace.openTextDocument({
+          language: document.languageId,
+          content: proposedText
+        });
+        await vscode.commands.executeCommand(
+          'vscode.diff',
+          targetUri,
+          previewDocument.uri,
+          'Foundry Local proposed changes'
+        );
         const choice = await vscode.window.showInformationMessage(
-          'Foundry Local proposed changes. Apply them?',
+          'Review the diff, then choose whether to apply the Foundry Local changes.',
           { modal: true },
           'Apply'
         );
