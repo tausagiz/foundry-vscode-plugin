@@ -9,5 +9,17 @@ describe('Foundry Local Copilot extension', () => {
 
     await extension.activate();
     assert.equal(extension.isActive, true);
+
+    const toolNames = vscode.lm.tools.map(tool => tool.name);
+    assert.deepEqual(
+      toolNames.filter(name => name.startsWith('foundryLocal_')).sort(),
+      [
+        'foundryLocal_getDiagnostics',
+        'foundryLocal_proposeEdits',
+        'foundryLocal_readFile',
+        'foundryLocal_runTests',
+        'foundryLocal_searchWorkspace'
+      ]
+    );
   });
 });

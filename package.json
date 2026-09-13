@@ -150,6 +150,18 @@
           },
           "required": ["edits"]
         }
+      },
+      {
+        "name": "foundryLocal_runTests",
+        "displayName": "Run workspace validation",
+        "modelDescription": "Runs the fixed npm test or compile script in the current workspace after user confirmation.",
+        "description": "Run npm test or npm run compile in the workspace.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "script": { "type": "string", "enum": ["test", "compile"] }
+          }
+        }
       }
     ],
     "configuration": {

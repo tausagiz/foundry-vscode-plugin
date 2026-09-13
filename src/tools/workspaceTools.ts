@@ -20,6 +20,10 @@ type ProposedEditsInput = {
   summary?: string;
 };
 
+type RunTestsInput = {
+  script?: 'test' | 'compile';
+};
+
 export function registerWorkspaceTools(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.lm.registerTool<ReadFileInput>('foundryLocal_readFile', {
@@ -111,6 +115,36 @@ export function registerWorkspaceTools(context: vscode.ExtensionContext): void {
         const applied = await vscode.workspace.applyEdit(workspaceEdit, { isRefactoring: true });
         return new vscode.LanguageModelToolResult([
           vscode.LanguageModelDataPart.json({ applied, editCount: options.input.edits.length })
+        ]);
+      }
+    }),
+    vscode.lm.registerTool<RunTestsInput>('foundryLocal_runTests', {
+      prepareInvocation(options) {
+        return {
+          invocationMessage: `Running npm ${options.input.script === 'compile' ? 'compile' : 'test'}`,
+          confirmationMessages: {
+            title: 'Run workspace validation?',
+            message: 'This will run the fixed npm validation script in the current workspace.'
+          }
+        };
+      },
+      async invoke(options) {
+        const folder = vscode.workspace.workspaceFolders?.[0];
+        if (!folder) {
+          throw new Error('Open a workspace before running validation.');
+        }
+        const script = options.input.script === 'compile' ? 'compile' : 'test';
+        const task = new vscode.Task(
+          { type: 'foundryLocalValidation', script },
+          folder,
+          `Foundry Local: npm run ${script}`,
+          'Foundry Local',
+          new vscode.ShellExecution('npm.cmd', ['run', script], { cwd: folder.uri.fsPath })
+        );
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        await vscode.tasks.executeTask(task);
+        return new vscode.LanguageModelToolResult([
+          vscode.LanguageModelDataPart.json({ started: true, script })
         ]);
       }
     })
