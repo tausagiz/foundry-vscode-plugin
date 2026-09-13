@@ -9,6 +9,7 @@ VS Code extension for local coding assistance powered by Microsoft Foundry Local
 - inline code completions
 - `Explain with Foundry Local` action for a selection
 - editor context with the active file, selection and diagnostics
+- automatic SDK model download when `foundryLocal.autoDownload` is enabled
 
 ## Requirements
 
@@ -17,7 +18,14 @@ VS Code extension for local coding assistance powered by Microsoft Foundry Local
 - Node.js 20 or newer for installing dependencies and building the extension
 - Microsoft Foundry Local runtime and at least one locally available model
 
-The current machine does not have Node.js or `azd` available in `PATH`. Install Node.js before running `npm install` and building the extension. `azd` is only required by the broader Foundry deployment tooling and is not required for the local runtime MVP.
+On Windows, install the runtimes with:
+
+```powershell
+winget install --id OpenJS.NodeJS.LTS --exact
+winget install --id Microsoft.Azd --exact
+```
+
+`azd` is only required by the broader Foundry deployment tooling and is not required for local inference itself. The extension uses the `foundry-local-sdk-winml` package for the Windows native runtime and `foundry-local-sdk` for the typed JavaScript API.
 
 ## Development
 
@@ -26,6 +34,6 @@ npm install
 npm run compile
 ```
 
-Press `F5` to launch an Extension Development Host. Configure the model alias in VS Code settings under `foundryLocal.modelAlias`, or leave it empty to use the first model returned by the local catalog.
+Press `F5` to launch an Extension Development Host. The default model is `qwen2.5-coder-0.5b`; change it with `foundryLocal.modelAlias` if needed. When `foundryLocal.autoDownload` is enabled, the SDK downloads a model that is not present in its own cache on first use.
 
 The extension sends prompts to the local Foundry Local runtime. It does not intentionally send source code to Azure or collect prompt telemetry.

@@ -33,8 +33,12 @@
     },
     "codeActionsProviders": [
       {
-        "languages": ["*"],
-        "providedCodeActionKinds": ["quickfix"]
+        "languages": [
+          "*"
+        ],
+        "providedCodeActionKinds": [
+          "quickfix"
+        ]
       }
     ],
     "chatParticipants": [
@@ -66,8 +70,13 @@
         },
         "foundryLocal.modelAlias": {
           "type": "string",
-          "default": "",
-          "description": "Foundry Local model alias. Leave empty to choose the first catalog model."
+          "default": "qwen2.5-coder-0.5b",
+          "description": "Foundry Local model alias."
+        },
+        "foundryLocal.autoDownload": {
+          "type": "boolean",
+          "default": true,
+          "description": "Download the selected model into the SDK cache when it is not available locally."
         },
         "foundryLocal.maxOutputTokens": {
           "type": "number",
@@ -93,13 +102,19 @@
     "package": "vsce package"
   },
   "dependencies": {
+    "foundry-local-sdk": "1.2.4",
     "foundry-local-sdk-winml": "latest"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.100.0",
-    "typescript": "^5.8.0",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/vsce": "^3.4.0"
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^3.4.0",
+    "typescript": "^5.8.0"
+  },
+  "allowScripts": {
+    "foundry-local-sdk-winml@1.2.4": true,
+    "foundry-local-sdk@1.2.4": true
   }
 }
